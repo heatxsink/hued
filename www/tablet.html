@@ -10,10 +10,7 @@
 			<div class="row">
 				<div class="col-xs-4 col-md-3 ">
 					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block upstairs">Upstairs</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block office">Office</button>
+						<button type="button" class="btn btn-default btn-lrg btn-block hallway">Hallway</button>
 					</div>
 					<div class="row well-lg">
 						<button type="button" class="btn btn-default btn-lrg btn-block bedroom">Bedroom</button>
@@ -25,19 +22,19 @@
 						<button type="button" class="btn btn-default btn-lrg btn-block all">All</button>
 					</div>
 				</div>
-				
+
 				<div class="col-xs-2 col-md-2 ">
 					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block off">OFF</button>
+						<button type="button" class="btn btn-success btn-lrg btn-block on">ON</button>
+					</div>
+					<div class="row well-lg">
+						<button type="button" class="btn btn-danger btn-lrg btn-block off">OFF</button>
 					</div>
 					<div class="row well-lg">
 						<button type="button" class="btn btn-default btn-lrg btn-block red">Red</button>
 					</div>
 					<div class="row well-lg">
 						<button type="button" class="btn btn-default btn-lrg btn-block blue">Blue</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block candle-light">Candle Light</button>
 					</div>
 				</div>
 
@@ -61,16 +58,14 @@
 					<div class="row well-lg">
 						<button type="button" class="btn btn-default btn-lrg btn-block white">White</button>
 					</div>
-					
 					<div class="row well-lg">
 						<button type="button" class="btn btn-default btn-lrg btn-block snow">Snow</button>
 					</div>
-					
 					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block virgin-america">Virgin America</button>
+						<button type="button" class="btn btn-default btn-lrg btn-block candle-light">Candle Light</button>
 					</div>
 					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block">NaN</button>
+						<button type="button" class="btn btn-default btn-lrg btn-block virgin-america">Virgin America</button>
 					</div>
 				</div>
 
@@ -98,10 +93,10 @@
 		<script type="text/javascript">
 			var SELECTED_GROUP = "";
 			var SELECTED_COLOR = "";
-			
-			var groups = new Array(".all", ".office", ".bedroom", ".living-room", ".upstairs");
-			var colors = new Array(".off", ".red", ".blue", ".energize", ".relax", ".reading", ".concentrate", ".candle-light", ".virgin-america", ".white", ".orange", ".deep-sea", ".green", ".snow", ".movie-mode");
-			
+
+			var groups = new Array(".all", ".bedroom", ".living-room", ".hallway");
+			var colors = new Array(".on", ".off", ".red", ".blue", ".energize", ".relax", ".reading", ".concentrate", ".candle-light", ".virgin-america", ".white", ".orange", ".deep-sea", ".green", ".snow", ".movie-mode");
+
 			function select_group(selected_group) {
 				for(var i = 0; i < groups.length; i++) {
 					var group_class = groups[i];
@@ -127,15 +122,11 @@
 					$.get(url);
 				}
 			}
-			
+
 			$(document).ready(function(){
-				
+
 				$(".all").click(function(){
 					select_group("all");
-				});
-
-				$(".office").click(function(){
-					select_group("office");
 				});
 
 				$(".bedroom").click(function(){
@@ -146,16 +137,20 @@
 					select_group("living-room");
 				});
 
-				$(".upstairs").click(function(){
-					select_group("upstairs");
+				$(".hallway").click(function(){
+					select_group("hallway");
 				});
 
 				//COLORS
 
+				$(".on").click(function(){
+					select_color("on");
+				});
+
 				$(".off").click(function(){
 					select_color("off");
 				});
-				
+
 				$(".red").click(function(){
 					select_color("red");
 				});
@@ -175,7 +170,7 @@
 				$(".relax").click(function(){
 					select_color("relax");
 				});
-				
+
 				$(".reading").click(function(){
 					select_color("reading");
 				});
@@ -187,7 +182,7 @@
 				$(".virgin-america").click(function(){
 					select_color("virgin-america");
 				});
-				
+
 				$(".white").click(function(){
 					select_color("white");
 				});
@@ -195,7 +190,7 @@
 				$(".snow").click(function(){
 					select_color("snow");
 				});
-				
+
 				$(".orange").click(function(){
 					select_color("orange");
 				});
@@ -203,16 +198,16 @@
 				$(".deep-sea").click(function(){
 					select_color("deep-sea");
 				});
-				
-				
+
+
 				$(".green").click(function(){
 					select_color("green");
 				});
-				
+
 				$(".movie-mode").click(function(){
 					select_color("movie-mode");
 				});
-				
+
 			});
 		</script>
 	</body>
