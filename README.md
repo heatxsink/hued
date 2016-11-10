@@ -1,18 +1,15 @@
 go-hue-web
 ==========
-The tablet/phone web interface I've hacked up to use philips hue lights. I want to 
-refine the tablet interface more. I mostly use the phone interface.
+A tablet/phone web interface using Philips HUE built just for me.
 
-setup
------
-To run web app you'll need golang and the "github.com/heatxsink/go-hue" module.
+setup / installation
+---
+	$ curl https://glide.sh/get | sh
+	$ go get github.com/heatxsink/go-hue-web
+	$ cd $GOPATH/src/github.com/heatxsink/go-hue-web/
+	$ glide install
+	$ go build -v hued.go
 
-To install "github.com/heatxsink/go-hue" golang module ...
-
-	$ go get github.com/heatxsink/go-hue/src
-
-updates
--------
-08/19/14
-	This used to live in the examples directory of the http://github.com/heatxsink/go-hue 
-	repo. I've since yanked it out of there. I plan on updating bootstrap and ratchet to latest.
+bugs and contribution
+---
+Please feel free to reach out. Issues and PR's are always welcome!

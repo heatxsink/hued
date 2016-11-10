@@ -1,0 +1,8 @@
+package: github.com/heatxsink/go-hue-web
+import:
+- package: github.com/golang/glog
+- package: github.com/heatxsink/go-hue
+  subpackages:
+  - groups
+  - lights
+  - portal
