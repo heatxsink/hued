@@ -1,4 +1,4 @@
-package light_state_factory
+package factory
 
 import (
 	"github.com/heatxsink/go-hue/lights"
@@ -40,6 +40,24 @@ func init() {
 	greenState = lights.State{On: true, Hue: 25654, Effect: "none", Bri: 254, Sat: 253, CT: 290, XY: []float32{0.4083, 0.5162}, Alert: "none", TransitionTime: 4}
 	snowState = lights.State{On: true, Hue: 34258, Effect: "none", Bri: 254, Sat: 176, CT: 181, XY: []float32{0.3327, 0.3413}, Alert: "none", TransitionTime: 4}
 	movieModeState = lights.State{On: true, Hue: 65527, Effect: "none", Bri: 51, Sat: 253, CT: 500, XY: []float32{0.6736, 0.3221}, Alert: "none", TransitionTime: 4}
+}
+
+func GroupNamePresets(name string) int {
+	returnValue := -1
+	if name == "all" {
+		returnValue = 0
+	} else if name == "bedroom" {
+		returnValue = 1
+	} else if name == "living-room" {
+		returnValue = 2
+	} else if name == "hallway" {
+		returnValue = 3
+	} else if name == "master-bedroom" {
+		returnValue = 4
+	} else if name == "kitchen" {
+		returnValue = 5
+	}
+	return returnValue
 }
 
 func GetLightState(name string) lights.State {

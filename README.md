@@ -8,7 +8,8 @@ setup / installation
 	$ go get github.com/heatxsink/go-hue-web
 	$ cd $GOPATH/src/github.com/heatxsink/go-hue-web/
 	$ glide install
-	$ go build -v hued.go
+	$ go generate
+	$ go build
 
 bugs and contribution
 ---

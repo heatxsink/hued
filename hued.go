@@ -1,56 +1,148 @@
 package main
 
+//go:generate rice embed-go
 import (
+	"context"
 	"encoding/json"
 	"flag"
 	"fmt"
-	"github.com/golang/glog"
-	"github.com/heatxsink/go-hue-web/light_state_factory"
-	"github.com/heatxsink/go-hue/groups"
-	"github.com/heatxsink/go-hue/portal"
+	"html/template"
 	"net/http"
 	"os"
+	"os/signal"
+	"sync/atomic"
+	"time"
+
+	rice "github.com/GeertJohan/go.rice"
+	"github.com/golang/glog"
+	"github.com/gorilla/mux"
+
+	"github.com/heatxsink/go-hue-web/factory"
+	"github.com/heatxsink/go-hue/groups"
+	"github.com/heatxsink/go-hue/portal"
 )
 
 var (
-	hueUsername string = ""
-	hueHostname string = ""
-	hostname    string = "127.0.0.1"
-	port        int    = 9000
+	hueUsername string
+	hueHostname string
+	hostname    string
+	port        int
+	healthy     int32
+	box         *rice.Box
+	templates   map[string]*template.Template
+	router      *mux.Router
 )
 
-type ApiResponse struct {
+type APIResponse struct {
 	Result     bool   `json:"result"`
 	Message    string `json:"message"`
 	StatusCode int    `json:"status_code"`
 }
 
-func group_name_presets(name string) int {
-	returnValue := -1
-	if name == "all" {
-		returnValue = 0
-	} else if name == "bedroom" {
-		returnValue = 1
-	} else if name == "living-room" {
-		returnValue = 2
-	} else if name == "hallway" {
-		returnValue = 3
-	}
-	return returnValue
+func usage() {
+	fmt.Fprintf(os.Stderr, "usage: hued -key=[string]\n")
+	flag.PrintDefaults()
+	os.Exit(2)
 }
 
-func groupV1(w http.ResponseWriter, req *http.Request) {
-	apiResponse := ApiResponse{Result: true, Message: "", StatusCode: http.StatusOK}
-	req.ParseForm()
-	queryParams := req.Form
-	if req.Method == "GET" {
+func init() {
+	flag.StringVar(&hueUsername, "key", os.Getenv("HUE_USERNAME"), "Philips HUE Hub api key.")
+	flag.StringVar(&hostname, "h", "0.0.0.0", "Hostname of server.")
+	flag.IntVar(&port, "p", 9000, "Port number of server.")
+	flag.Parse()
+	flag.Usage = usage
+}
+
+func getHueHubHostname(username string) string {
+	pp, err := portal.GetPortal()
+	if err != nil {
+		glog.Errorf("Error: %s\n", err.Error())
+	}
+	return pp[0].InternalIPAddress
+}
+
+func loadRouter() (*mux.Router, error) {
+	var err error
+	box, err = rice.FindBox("www")
+	if err != nil {
+		return nil, err
+	}
+	r := mux.NewRouter()
+	r.HandleFunc("/phone", phoneV1).Name("phone").Methods("GET")
+	r.HandleFunc("/home", homeV1).Name("home").Methods("GET")
+	r.HandleFunc("/status", statusV1).Name("status").Methods("GET")
+	r.HandleFunc("/api/1/group", groupV1).Name("api_group").Methods("GET")
+	r.HandleFunc("/api/1/status", statusV1).Name("api_status").Methods("GET")
+	r.PathPrefix("/").Handler(http.FileServer(box.HTTPBox()))
+	return r, nil
+}
+
+func loadTemplates() (map[string]*template.Template, error) {
+	templates := make(map[string]*template.Template)
+	templateString, err := box.String("templates/home.html")
+	if err != nil {
+		return nil, err
+	}
+	tmpl, err := template.New("home.html").Parse(templateString)
+	if err != nil {
+		return nil, err
+	}
+	templates["home.html"] = tmpl
+	templateString1, err := box.String("templates/phone.html")
+	if err != nil {
+		return nil, err
+	}
+	tmpl1, err := template.New("phone.html").Parse(templateString1)
+	if err != nil {
+		return nil, err
+	}
+	templates["phone.html"] = tmpl1
+	return templates, nil
+}
+
+func getContext(w http.ResponseWriter, r *http.Request) (map[string]interface{}, error) {
+	ctx := make(map[string]interface{})
+	return ctx, nil
+}
+
+func phoneV1(w http.ResponseWriter, r *http.Request) {
+	tmpl := templates["phone.html"]
+	ctx, err := getContext(w, r)
+	if err != nil {
+		glog.Errorln(err)
+	}
+	ctx["title"] = "hued"
+	err = tmpl.Execute(w, ctx)
+	if err != nil {
+		glog.Errorf("tmpl.Execute(): %s", err)
+	}
+}
+
+func homeV1(w http.ResponseWriter, r *http.Request) {
+	tmpl := templates["home.html"]
+	ctx, err := getContext(w, r)
+	if err != nil {
+		glog.Errorln(err)
+	}
+	ctx["title"] = "hued - home"
+	err = tmpl.Execute(w, ctx)
+	if err != nil {
+		glog.Errorf("tmpl.Execute(): %s", err)
+	}
+}
+
+func groupV1(w http.ResponseWriter, r *http.Request) {
+	apiResponse := APIResponse{Result: true, Message: "", StatusCode: http.StatusOK}
+	r.ParseForm()
+	queryParams := r.Form
+	if r.Method == "GET" {
 		name, nameExists := queryParams["name"]
 		state, stateExists := queryParams["state"]
 		if nameExists {
-			groupID := group_name_presets(name[0])
+			groupID := factory.GroupNamePresets(name[0])
 			if stateExists {
 				gg := groups.New(hueHostname, hueUsername)
-				groupState := light_state_factory.GetLightState(state[0])
+				groupState := factory.GetLightState(state[0])
 				gg.SetGroupState(groupID, groupState)
 			} else {
 				apiResponse.Result = false
@@ -76,70 +168,54 @@ func groupV1(w http.ResponseWriter, req *http.Request) {
 	w.Write([]byte(jsonData))
 }
 
-func statusV1(w http.ResponseWriter, req *http.Request) {
+func statusV1(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("content-type", "text/plain")
 	w.WriteHeader(http.StatusTeapot)
 	w.Write([]byte(http.StatusText(http.StatusTeapot)))
-}
-
-func phoneV1(w http.ResponseWriter, req *http.Request) {
-	http.ServeFile(w, req, "./www/phone.html")
-}
-
-func tabletV1(w http.ResponseWriter, req *http.Request) {
-	http.ServeFile(w, req, "./www/tablet.html")
-}
-
-func staticAssets(w http.ResponseWriter, req *http.Request) {
-	if len(req.URL.Path) == 1 {
-		root(w, req)
-	} else if string(req.URL.Path[1:7]) == "static" {
-		path := fmt.Sprintf("./www/%s", req.URL.Path[1:])
-		http.ServeFile(w, req, path)
-	} else {
-		root(w, req)
-	}
-}
-
-func root(w http.ResponseWriter, req *http.Request) {
-	w.Header().Set("content-type", "text/plain")
-	w.WriteHeader(http.StatusTeapot)
-	w.Write([]byte(http.StatusText(http.StatusTeapot)))
-}
-
-func usage() {
-	fmt.Fprintf(os.Stderr, "usage: hued -key=[string]\n")
-	flag.PrintDefaults()
-	os.Exit(2)
-}
-
-func init() {
-	flag.StringVar(&hueUsername, "key", os.Getenv("HUE_USERNAME"), "Philips HUE Hub api key.")
-	flag.Parse()
-	flag.Usage = usage
 }
 
 func main() {
 	if hueUsername != "" {
-		pp, err := portal.GetPortal()
+		var err error
+		hueHostname = getHueHubHostname(hueUsername)
+		router, err = loadRouter()
 		if err != nil {
-			glog.Errorf("Error: %s\n", err.Error())
+			glog.Fatalln(err)
 		}
-		hueHostname = pp[0].InternalIPAddress
-		mux := http.NewServeMux()
-		mux.HandleFunc("/api/1/group", groupV1)
-		mux.HandleFunc("/api/1/status", statusV1)
-		mux.HandleFunc("/tablet", tabletV1)
-		mux.HandleFunc("/phone", phoneV1)
-		mux.HandleFunc("/", staticAssets)
-		fullHostname := fmt.Sprintf("%s:%d", hostname, port)
-		startMessage := fmt.Sprintf("Starting local hued-web on %s\n", fullHostname)
-		fmt.Println(startMessage)
-		glog.Infof(startMessage)
-		err = http.ListenAndServe(fullHostname, mux)
+		templates, err = loadTemplates()
 		if err != nil {
-			glog.Errorf("Error: %s\n", err.Error())
+			glog.Fatalln(err)
 		}
+		httpAddress := fmt.Sprintf("%s:%d", hostname, port)
+		server := &http.Server{
+			Addr:         httpAddress,
+			Handler:      router,
+			ReadTimeout:  5 * time.Second,
+			WriteTimeout: 10 * time.Second,
+			IdleTimeout:  15 * time.Second,
+		}
+		done := make(chan bool)
+		quit := make(chan os.Signal, 1)
+		signal.Notify(quit, os.Interrupt)
+		go func() {
+			<-quit
+			glog.Infoln("Server is shutting down...")
+			atomic.StoreInt32(&healthy, 0)
+			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+			defer cancel()
+			server.SetKeepAlivesEnabled(false)
+			if err := server.Shutdown(ctx); err != nil {
+				glog.Fatalln("Could not gracefully shutdown the server: %v\n", err)
+			}
+			close(done)
+		}()
+		glog.Infoln("Server is ready to handle requests at", httpAddress)
+		atomic.StoreInt32(&healthy, 1)
+		if err := server.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			glog.Fatalf("Could not listen on %s: %v\n", httpAddress, err)
+		}
+		<-done
+		glog.Infoln("Server stopped")
 	} else {
 		usage()
 	}
