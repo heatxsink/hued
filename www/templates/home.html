@@ -1,41 +1,44 @@
+{{ define "home.html" }}
 <!DOCTYPE html>
 <html>
 	<head>
-		<title>Lights</title>
+		<title>{{ .title }}</title>
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		<link href="/static/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
 	</head>
 	<body>
 		<div class="container">
 			<div class="row">
-				<div class="col-xs-4 col-md-3 ">
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block hallway">Hallway</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block bedroom">Bedroom</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block living-room">Living Room</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block all">All</button>
-					</div>
-				</div>
-
-				<div class="col-xs-2 col-md-2 ">
+				<div class="col-xs-2 col-md-2">
 					<div class="row well-lg">
 						<button type="button" class="btn btn-success btn-lrg btn-block on">ON</button>
 					</div>
 					<div class="row well-lg">
 						<button type="button" class="btn btn-danger btn-lrg btn-block off">OFF</button>
 					</div>
+				</div>
+
+				<div class="col-xs-4 col-md-2 ">
 					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block red">Red</button>
+						<button type="button" class="btn btn-default btn-lrg btn-block all">All</button>
 					</div>
+
 					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block blue">Blue</button>
+						<button type="button" class="btn btn-default btn-lrg btn-block kitchen">Kitchen</button>
 					</div>
+
+					<div class="row well-lg">
+						<button type="button" class="btn btn-default btn-lrg btn-block living-room">Living Room</button>
+					</div>
+
+					<div class="row well-lg">
+						<button type="button" class="btn btn-default btn-lrg btn-block hallway">Hallway</button>
+					</div>
+
+					<div class="row well-lg">
+						<button type="button" class="btn btn-default btn-lrg btn-block master-bedroom">Master Bedroom</button>
+					</div>
+
 				</div>
 
 				<div class="col-xs-2 col-md-2 ">
@@ -56,6 +59,15 @@
 
 				<div class="col-xs-2 col-md-2 ">
 					<div class="row well-lg">
+						<button type="button" class="btn btn-default btn-lrg btn-block red">Red</button>
+					</div>
+					<div class="row well-lg">
+						<button type="button" class="btn btn-default btn-lrg btn-block blue">Blue</button>
+					</div>
+					<div class="row well-lg">
+						<button type="button" class="btn btn-default btn-lrg btn-block virgin-america">Virgin America</button>
+					</div>
+					<div class="row well-lg">
 						<button type="button" class="btn btn-default btn-lrg btn-block white">White</button>
 					</div>
 					<div class="row well-lg">
@@ -63,9 +75,6 @@
 					</div>
 					<div class="row well-lg">
 						<button type="button" class="btn btn-default btn-lrg btn-block candle-light">Candle Light</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block virgin-america">Virgin America</button>
 					</div>
 				</div>
 
@@ -94,7 +103,7 @@
 			var SELECTED_GROUP = "";
 			var SELECTED_COLOR = "";
 
-			var groups = new Array(".all", ".bedroom", ".living-room", ".hallway");
+			var groups = new Array(".all", ".bedroom", ".living-room", ".hallway", ".kitchen", ".master-bedroom");
 			var colors = new Array(".on", ".off", ".red", ".blue", ".energize", ".relax", ".reading", ".concentrate", ".candle-light", ".virgin-america", ".white", ".orange", ".deep-sea", ".green", ".snow", ".movie-mode");
 
 			function select_group(selected_group) {
@@ -129,8 +138,8 @@
 					select_group("all");
 				});
 
-				$(".bedroom").click(function(){
-					select_group("bedroom");
+				$(".kitchen").click(function(){
+					select_group("kitchen");
 				});
 
 				$(".living-room").click(function(){
@@ -139,6 +148,10 @@
 
 				$(".hallway").click(function(){
 					select_group("hallway");
+				});
+
+				$(".master-bedroom").click(function(){
+					select_group("master-bedroom");
 				});
 
 				//COLORS
@@ -212,3 +225,4 @@
 		</script>
 	</body>
 </html>
+{{ end }}

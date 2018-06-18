@@ -12,6 +12,10 @@ vendor
 *.[568vq]
 [568vq].out
 
+hued
+rice-box.go
+.DS_Store
+
 *.cgo1.go
 *.cgo2.c
 _cgo_defun.c
@@ -19,6 +23,7 @@ _cgo_gotypes.go
 _cgo_export.*
 
 _testmain.go
+rice-box.go
 
 *.exe
 *.test

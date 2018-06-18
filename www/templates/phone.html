@@ -1,0 +1,174 @@
+{{ define "phone.html" }}
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>{{ .title }}</title>
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <link rel="apple-touch-icon" href="/static/images/lights.png"/>
+
+        <link href="/static/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+	</head>
+	<body>
+        <div class="container">
+            <h1>Lights</h1>
+        </div>
+        <div class="container">
+			<div class="row p-2">
+            
+                    <div class="dropdown">
+                        <button class="btn-lg btn-secondary btn-block dropdown-toggle" type="button" id="zone" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                            Select Zone
+                        </button>
+                        <div class="dropdown-menu" aria-labelledby="zone">
+                            <button type="button" class="dropdown-item all">All</button>
+                            <button type="button" class="dropdown-item kitchen">Kitchen</button>
+                            <button type="button" class="dropdown-item living-room">Living Room</button>
+                            <button type="button" class="dropdown-item hallway">Hallway</button>
+                            <button type="button" class="dropdown-item master-bedroom">Master Bedroom</button>
+                        </div>
+                    </div>
+            
+            </div>
+
+            <div class="row p-2">
+                <button type="button" class="btn-lg btn-success btn-block on">ON</button>
+                <button type="button" class="btn-lg btn-danger btn-block off">OFF</button>
+            </div>
+
+            <div class="row p-2">
+                <button type="button" class="color btn-lg btn-outline-primary btn-block candle-light">Candle Light</button>
+                <button type="button" class="color btn-lg btn-outline-primary btn-block relax">Relax</button>
+                <button type="button" class="color btn-lg btn-outline-primary btn-block reading">Reading</button>
+                <button type="button" class="color btn-lg btn-outline-primary btn-block concentrate">Concentrate</button>
+                <button type="button" class="color btn-lg btn-outline-primary btn-block energize">Energize</button>
+            </div>
+
+            <div class="row p-2">
+                <button type="button" class="color btn-lg btn-outline-info btn-block red">Red</button>
+                <button type="button" class="color btn-lg btn-outline-info btn-block movie-mode">Movie Mode</button>
+                <button type="button" class="color btn-lg btn-outline-info btn-block deep-sea">Deep Sea</button>
+                <button type="button" class="color btn-lg btn-outline-info btn-block blue">Blue</button>
+                <button type="button" class="color btn-lg btn-outline-info btn-block virgin-america">Virgin America</button>
+            </div>
+            
+		</div>
+        <script src="/static/jquery/1.11.0.js"></script>
+        <script src="/static/popper/popper.min.js"></script>
+        <script src="/static/bootstrap/4.1.1/js/bootstrap.min.js"></script>
+        <script type="text/javascript">
+            String.prototype.replaceAll = function(str1, str2, ignore) {
+                return this.replace(new RegExp(str1.replace(/([\/\,\!\\\^\$\{\}\[\]\(\)\.\*\+\?\|\<\>\-\&])/g,"\\$&"),(ignore?"gi":"g")),(typeof(str2)=="string")?str2.replace(/\$/g,"$$$$"):str2);
+            }
+
+			var SELECTED_GROUP = "";
+			var SELECTED_COLOR = "";
+
+			function select_group(selected_group) {
+                label = $(selected_group).text();
+                $("#zone").text(label);
+                SELECTED_GROUP = selected_group.replaceAll(".", "");
+			}
+
+			function select_color(selected_color) {
+				$(".color").each(function(index) {
+                    if ($(this).hasClass("btn-primary")) {
+                        $(this).removeClass("btn-primary").addClass("btn-outline-primary");
+                    } else if ($(this).hasClass("btn-info")) {
+                        $(this).removeClass("btn-info").addClass("btn-outline-info");
+                    }
+                });
+                if ($(selected_color).hasClass('btn-outline-primary')) {
+                    $(selected_color).removeClass("btn-outline-primary").addClass("btn-primary");
+                } else if ($(selected_color).hasClass('btn-outline-info')) {
+                    $(selected_color).removeClass("btn-outline-info").addClass("btn-info");
+                }
+				SELECTED_COLOR = selected_color.replaceAll(".", "");
+				change_color();
+			}
+
+			function change_color() {
+				if(SELECTED_GROUP != "" && SELECTED_COLOR != "") {
+					var url = "/api/1/group?name=" + SELECTED_GROUP + "&state=" + SELECTED_COLOR;
+					$.get(url);
+				}
+			}
+
+			$(document).ready(function(){
+
+				$(".all").click(function(){
+					select_group(".all");
+				});
+
+				$(".kitchen").click(function(){
+					select_group(".kitchen");
+				});
+
+				$(".living-room").click(function(){
+					select_group(".living-room");
+				});
+
+				$(".hallway").click(function(){
+					select_group(".hallway");
+				});
+
+				$(".master-bedroom").click(function(){
+					select_group(".master-bedroom");
+				});
+
+				//COLORS
+
+				$(".on").click(function(){
+					select_color(".on");
+				});
+
+				$(".off").click(function(){
+					select_color(".off");
+				});
+
+				$(".red").click(function(){
+					select_color(".red");
+				});
+
+				$(".blue").click(function(){
+					select_color(".blue");
+				});
+
+				$(".candle-light").click(function(){
+					select_color(".candle-light");
+				});
+
+				$(".energize").click(function(){
+					select_color(".energize");
+				});
+
+				$(".relax").click(function(){
+					select_color(".relax");
+				});
+
+				$(".reading").click(function(){
+					select_color(".reading");
+				});
+
+				$(".concentrate").click(function(){
+					select_color(".concentrate");
+				});
+
+				$(".virgin-america").click(function(){
+					select_color(".virgin-america");
+				});
+
+				$(".deep-sea").click(function(){
+					select_color(".deep-sea");
+				});
+
+				$(".movie-mode").click(function(){
+					select_color(".movie-mode");
+				});
+
+			});
+		</script>
+	</body>
+</html>
+{{ end }}
