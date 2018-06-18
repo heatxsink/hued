@@ -3,125 +3,87 @@
 <html>
 	<head>
 		<title>{{ .title }}</title>
-		<meta name="viewport" content="width=device-width, initial-scale=1.0">
-		<link href="/static/bootstrap/3.0.3/css/bootstrap.min.css" rel="stylesheet">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <link rel="apple-touch-icon" href="/static/images/lights.png"/>
+
+        <link href="/static/bootstrap/4.1.1/css/bootstrap.min.css" rel="stylesheet">
+
 	</head>
 	<body>
 		<div class="container">
+			<h1>Lights</h1>
+		</div>
+		<div class="container">
 			<div class="row">
-				<div class="col-xs-2 col-md-2">
-					<div class="row well-lg">
-						<button type="button" class="btn btn-success btn-lrg btn-block on">ON</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-danger btn-lrg btn-block off">OFF</button>
-					</div>
+
+				<div class="col-2">
+					<button type="button" class="group btn btn-outline-primary btn-block" data-group="all">All</button>
+					<button type="button" class="group btn btn-outline-primary btn-block" data-group="kitchen">Kitchen</button>
+					<button type="button" class="group btn btn-outline-primary btn-block" data-group="living-room">Living Room</button>
+					<button type="button" class="group btn btn-outline-primary btn-block" data-group="hallway">Hallway</button>
+					<button type="button" class="group btn btn-outline-primary btn-block" data-group="master-bedroom">Master Bedroom</button>
+				</div>
+		
+				<div class="col-2">
+					<button type="button" class="color btn btn-success btn-lrg btn-block" data-color="on">ON</button>
+					<button type="button" class="color btn btn-danger btn-lrg btn-block" data-color="off">OFF</button>
 				</div>
 
-				<div class="col-xs-4 col-md-2 ">
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block all">All</button>
-					</div>
-
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block kitchen">Kitchen</button>
-					</div>
-
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block living-room">Living Room</button>
-					</div>
-
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block hallway">Hallway</button>
-					</div>
-
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block master-bedroom">Master Bedroom</button>
-					</div>
-
+				<div class="col-2">
+					<button type="button" class="color btn btn-outline-primary btn-block" data-color="candle-light">Candle Light</button>
+					<button type="button" class="color btn btn-outline-primary btn-block" data-color="relax">Relax</button>
+					<button type="button" class="color btn btn-outline-primary btn-block" data-color="reading">Reading</button>
+					<button type="button" class="color btn btn-outline-primary btn-block" data-color="concentrate">Concentrate</button>
+					<button type="button" class="color btn btn-outline-primary btn-block" data-color="energize">Energize</button>		
 				</div>
 
-				<div class="col-xs-2 col-md-2 ">
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block energize">Energize</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block relax">Relax</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block reading">Reading</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block concentrate">Concentrate</button>
-					</div>
+				<div class="col-2">
+					<button type="button" class="color btn btn-outline-info btn-block" data-color="red">Red</button>
+					<button type="button" class="color btn btn-outline-info btn-block" data-color="movie-mode">Movie Mode</button>
+					<button type="button" class="color btn btn-outline-info btn-block" data-color="deep-sea">Deep Sea</button>
+					<button type="button" class="color btn btn-outline-info btn-block" data-color="blue">Blue</button>
+					<button type="button" class="color btn btn-outline-info btn-block" data-color="virgin-america">Virgin America</button>		
 				</div>
 
-
-				<div class="col-xs-2 col-md-2 ">
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block red">Red</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block blue">Blue</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block virgin-america">Virgin America</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block white">White</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block snow">Snow</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block candle-light">Candle Light</button>
-					</div>
+				<div class="col-2">
+					<button type="button" class="color btn btn-outline-info btn-block" data-color="white">White</button>
+					<button type="button" class="color btn btn-outline-info btn-block" data-color="snow">Snow</button>	
+					<button type="button" class="color btn btn-outline-info btn-block" data-color="orange">Orange</button>
+					<button type="button" class="color btn btn-outline-info btn-block" data-color="green">Green</button>
 				</div>
 
-
-				<div class="col-xs-2 col-md-2 ">
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block orange">Orange</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block deep-sea">Deep Sea</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block movie-mode">Movie Mode</button>
-					</div>
-					<div class="row well-lg">
-						<button type="button" class="btn btn-default btn-lrg btn-block green">Green</button>
-					</div>
-				</div>
-
-				</div>
 			</div>
 		</div>
-		<script src="/static/jquery/1.11.0.js"></script>
-		<script src="/static/bootstrap/3.0.3/js/bootstrap.min.js"></script>
+        <script src="/static/jquery/1.11.0.js"></script>
+        <script src="/static/bootstrap/4.1.1/js/bootstrap.min.js"></script>
 		<script type="text/javascript">
 			var SELECTED_GROUP = "";
 			var SELECTED_COLOR = "";
 
-			var groups = new Array(".all", ".bedroom", ".living-room", ".hallway", ".kitchen", ".master-bedroom");
-			var colors = new Array(".on", ".off", ".red", ".blue", ".energize", ".relax", ".reading", ".concentrate", ".candle-light", ".virgin-america", ".white", ".orange", ".deep-sea", ".green", ".snow", ".movie-mode");
-
-			function select_group(selected_group) {
-				for(var i = 0; i < groups.length; i++) {
-					var group_class = groups[i];
-					$(group_class).removeClass("btn-primary").addClass("btn-default");
-				}
-				$("." + selected_group).removeClass("btn-default").addClass("btn-primary");
-				SELECTED_GROUP = selected_group;
+			function select_group(node) {
+				$(".group").each(function(index) {
+					$(this).removeClass("btn-primary").addClass("btn-outline-primary");
+				});
+				node.removeClass("btn-outline-primary").addClass("btn-primary");
+				SELECTED_GROUP = node.data("group");
 			}
 
-			function select_color(selected_color) {
-				for(var i = 0; i < colors.length; i++) {
-					var color_class = colors[i];
-					$(color_class).removeClass("btn-primary").addClass("btn-default");
-				}
-				$("." + selected_color).removeClass("btn-default").addClass("btn-primary");
-				SELECTED_COLOR = selected_color;
+			function select_color(node) {
+				$(".color").each(function(index) {
+                    if ($(this).hasClass("btn-primary")) {
+                        $(this).removeClass("btn-primary").addClass("btn-outline-primary");
+                    } else if ($(this).hasClass("btn-info")) {
+                        $(this).removeClass("btn-info").addClass("btn-outline-info");
+                    }
+                });
+                if (node.hasClass('btn-outline-primary')) {
+                    node.removeClass("btn-outline-primary").addClass("btn-primary");
+                } else if (node.hasClass('btn-outline-info')) {
+                    node.removeClass("btn-outline-info").addClass("btn-info");
+                }
+				SELECTED_COLOR = node.data("color");
 				change_color();
 			}
 
@@ -133,94 +95,13 @@
 			}
 
 			$(document).ready(function(){
-
-				$(".all").click(function(){
-					select_group("all");
+				$(".group").click(function(){
+					select_group($(this));
 				});
 
-				$(".kitchen").click(function(){
-					select_group("kitchen");
+				$(".color").click(function(){
+					select_color($(this));
 				});
-
-				$(".living-room").click(function(){
-					select_group("living-room");
-				});
-
-				$(".hallway").click(function(){
-					select_group("hallway");
-				});
-
-				$(".master-bedroom").click(function(){
-					select_group("master-bedroom");
-				});
-
-				//COLORS
-
-				$(".on").click(function(){
-					select_color("on");
-				});
-
-				$(".off").click(function(){
-					select_color("off");
-				});
-
-				$(".red").click(function(){
-					select_color("red");
-				});
-
-				$(".blue").click(function(){
-					select_color("blue");
-				});
-
-				$(".candle-light").click(function(){
-					select_color("candle-light");
-				});
-
-				$(".energize").click(function(){
-					select_color("energize");
-				});
-
-				$(".relax").click(function(){
-					select_color("relax");
-				});
-
-				$(".reading").click(function(){
-					select_color("reading");
-				});
-
-				$(".concentrate").click(function(){
-					select_color("concentrate");
-				});
-
-				$(".virgin-america").click(function(){
-					select_color("virgin-america");
-				});
-
-				$(".white").click(function(){
-					select_color("white");
-				});
-
-				$(".snow").click(function(){
-					select_color("snow");
-				});
-
-				$(".orange").click(function(){
-					select_color("orange");
-				});
-
-				$(".deep-sea").click(function(){
-					select_color("deep-sea");
-				});
-
-
-				$(".green").click(function(){
-					select_color("green");
-				});
-
-				$(".movie-mode").click(function(){
-					select_color("movie-mode");
-				});
-
 			});
 		</script>
 	</body>
