@@ -23,14 +23,16 @@ import (
 )
 
 var (
-	hueUsername string
-	hueHostname string
-	hostname    string
-	port        int
-	healthy     int32
-	box         *rice.Box
-	templates   map[string]*template.Template
-	router      *mux.Router
+	hueUsername  string
+	hueHostname  string
+	hostname     string
+	port         int
+	healthy      int32
+	box          *rice.Box
+	templates    map[string]*template.Template
+	router       *mux.Router
+	buttonState  int
+	buttonStates []string
 )
 
 type APIResponse struct {
@@ -46,6 +48,9 @@ func usage() {
 }
 
 func init() {
+	buttonState = 0
+	buttonStates = []string{"deep-sea", "blue", "reading"}
+
 	flag.StringVar(&hueUsername, "key", os.Getenv("HUE_USERNAME"), "Philips HUE Hub api key.")
 	flag.StringVar(&hostname, "h", "0.0.0.0", "Hostname of server.")
 	flag.IntVar(&port, "p", 9000, "Port number of server.")
@@ -68,6 +73,7 @@ func loadRouter() (*mux.Router, error) {
 		return nil, err
 	}
 	r := mux.NewRouter()
+	r.HandleFunc("/flic", flicV1).Name("flic").Methods("GET", "POST")
 	r.HandleFunc("/phone", phoneV1).Name("phone").Methods("GET")
 	r.HandleFunc("/home", homeV1).Name("home").Methods("GET")
 	r.HandleFunc("/status", statusV1).Name("status").Methods("GET")
@@ -157,6 +163,45 @@ func groupV1(w http.ResponseWriter, r *http.Request) {
 	} else {
 		apiResponse.Result = false
 		apiResponse.Message = "Not an HTTP GET."
+		apiResponse.StatusCode = http.StatusForbidden
+	}
+	w.Header().Set("content-type", "application/json")
+	w.WriteHeader(apiResponse.StatusCode)
+	jsonData, err := json.Marshal(&apiResponse)
+	if err != nil {
+		glog.Errorf("Error: %s\n", err.Error())
+	}
+	w.Write([]byte(jsonData))
+}
+
+func flicV1(w http.ResponseWriter, r *http.Request) {
+	apiResponse := APIResponse{Result: true, Message: "", StatusCode: http.StatusOK}
+	r.ParseForm()
+	queryParams := r.Form
+	currentLightState := buttonStates[buttonState]
+	if r.Method == "GET" {
+		apiResponse.Message = currentLightState
+	} else if r.Method == "POST" {
+		name, nameExists := queryParams["name"]
+		if nameExists {
+			groupID := factory.GroupNamePresets(name[0])
+			gg := groups.New(hueHostname, hueUsername)
+			groupState := factory.GetLightState(currentLightState)
+			gg.SetGroupState(groupID, groupState)
+			if buttonState == (len(buttonStates) - 1) {
+				buttonState = 0
+			} else {
+				buttonState = buttonState + 1
+			}
+			apiResponse.Message = currentLightState
+		} else {
+			apiResponse.Result = false
+			apiResponse.Message = "Invalid id or name."
+			apiResponse.StatusCode = http.StatusUnauthorized
+		}
+	} else {
+		apiResponse.Result = false
+		apiResponse.Message = "Not an HTTP POST."
 		apiResponse.StatusCode = http.StatusForbidden
 	}
 	w.Header().Set("content-type", "application/json")
