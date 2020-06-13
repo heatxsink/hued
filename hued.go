@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"sync/atomic"
 	"time"
 
@@ -17,9 +18,9 @@ import (
 	"github.com/golang/glog"
 	"github.com/gorilla/mux"
 
-	"github.com/heatxsink/go-hue-web/factory"
 	"github.com/heatxsink/go-hue/groups"
 	"github.com/heatxsink/go-hue/portal"
+	"github.com/heatxsink/hued/factory"
 )
 
 var (
@@ -28,7 +29,6 @@ var (
 	hostname     string
 	port         int
 	healthy      int32
-	box          *rice.Box
 	templates    map[string]*template.Template
 	router       *mux.Router
 	buttonState  int
@@ -50,7 +50,6 @@ func usage() {
 func init() {
 	buttonState = 0
 	buttonStates = []string{"deep-sea", "blue", "reading"}
-
 	flag.StringVar(&hueUsername, "key", os.Getenv("HUE_USERNAME"), "Philips HUE Hub api key.")
 	flag.StringVar(&hostname, "h", "0.0.0.0", "Hostname of server.")
 	flag.IntVar(&port, "p", 9000, "Port number of server.")
@@ -63,15 +62,12 @@ func getHueHubHostname(username string) string {
 	if err != nil {
 		glog.Errorf("Error: %s\n", err.Error())
 	}
-	return pp[0].InternalIPAddress
+	hn := pp[0].InternalIPAddress
+	glog.V(1).Infoln("Hostname: ", hn)
+	return hn
 }
 
-func loadRouter() (*mux.Router, error) {
-	var err error
-	box, err = rice.FindBox("www")
-	if err != nil {
-		return nil, err
-	}
+func loadRouter() *mux.Router {
 	r := mux.NewRouter()
 	r.HandleFunc("/flic", flicV1).Name("flic").Methods("GET", "POST")
 	r.HandleFunc("/phone", phoneV1).Name("phone").Methods("GET")
@@ -79,11 +75,28 @@ func loadRouter() (*mux.Router, error) {
 	r.HandleFunc("/status", statusV1).Name("status").Methods("GET")
 	r.HandleFunc("/api/1/group", groupV1).Name("api_group").Methods("GET")
 	r.HandleFunc("/api/1/status", statusV1).Name("api_status").Methods("GET")
-	r.PathPrefix("/").Handler(http.FileServer(box.HTTPBox()))
-	return r, nil
+	r.HandleFunc("/", rootV1).Name("root").Methods("GET")
+	fs := http.FileServer(rice.MustFindBox("www/").HTTPBox())
+	sh := http.StripPrefix("/", blackholeHandler(fs))
+	r.PathPrefix("/").Handler(sh)
+	return r
+}
+
+func blackholeHandler(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if strings.HasSuffix(r.URL.Path, "/") {
+			http.NotFound(w, r)
+			return
+		}
+		next.ServeHTTP(w, r)
+	})
 }
 
 func loadTemplates() (map[string]*template.Template, error) {
+	box, err := rice.FindBox("www/")
+	if err != nil {
+		return nil, err
+	}
 	templates := make(map[string]*template.Template)
 	templateString, err := box.String("templates/home.html")
 	if err != nil {
@@ -109,6 +122,10 @@ func loadTemplates() (map[string]*template.Template, error) {
 func getContext(w http.ResponseWriter, r *http.Request) (map[string]interface{}, error) {
 	ctx := make(map[string]interface{})
 	return ctx, nil
+}
+
+func rootV1(w http.ResponseWriter, r *http.Request) {
+	http.Redirect(w, r, "/home", 302)
 }
 
 func phoneV1(w http.ResponseWriter, r *http.Request) {
@@ -223,10 +240,7 @@ func main() {
 	if hueUsername != "" {
 		var err error
 		hueHostname = getHueHubHostname(hueUsername)
-		router, err = loadRouter()
-		if err != nil {
-			glog.Fatalln(err)
-		}
+		router := loadRouter()
 		templates, err = loadTemplates()
 		if err != nil {
 			glog.Fatalln(err)
