@@ -4,12 +4,14 @@ A tablet/phone web interface using Philips HUE API.
 
 Quickstart
 ---
+
   $ go get -u github.com/magefile/mage
   $ cd $GOPATH/src/github.com/magefile/mage
   $ go run bootstrap.go
   $ go get github.com/heatxsink/hued
   $ cd $GOPATH/src/github.com/heatxsink/hued
   $ mage build
+  $ ./hued -logtostdout
 
 Bugs and Contribution(s)
 ---
