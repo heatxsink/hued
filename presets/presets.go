@@ -37,7 +37,7 @@ func init() {
 	virginAmericaState = lights.State{On: true, Hue: 54179, Effect: "none", Bri: 254, Sat: 253, CT: 223, XY: []float32{0.3621, 0.1491}, Alert: "none", TransitionTime: 4}
 	whiteState = lights.State{On: true, Hue: 34495, Effect: "none", Bri: 203, Sat: 232, CT: 155, XY: []float32{0.3151, 0.3252}, Alert: "none", TransitionTime: 4}
 	orangeState = lights.State{On: true, Hue: 4868, Effect: "none", Bri: 254, Sat: 252, CT: 500, XY: []float32{0.6225, 0.3594}, Alert: "none", TransitionTime: 4}
-	deepSeaState = lights.State{On: true, Hue: 65527, Effect: "none", Bri: 253, Sat: 253, CT: 500, XY: []float32{0.6736, 0.3221}, Alert: "none", TransitionTime: 4}
+	deepSeaState = lights.State{On: true, Hue: 65527, Effect: "none", Bri: 253, Sat: 253, CT: 500, XY: []float32{0.6736, 0.3221}, Alert: "none", TransitionTime: 0}
 	greenState = lights.State{On: true, Hue: 25654, Effect: "none", Bri: 254, Sat: 253, CT: 290, XY: []float32{0.4083, 0.5162}, Alert: "none", TransitionTime: 4}
 	snowState = lights.State{On: true, Hue: 34258, Effect: "none", Bri: 254, Sat: 176, CT: 181, XY: []float32{0.3327, 0.3413}, Alert: "none", TransitionTime: 4}
 	movieModeState = lights.State{On: true, Hue: 65527, Effect: "none", Bri: 51, Sat: 253, CT: 500, XY: []float32{0.6736, 0.3221}, Alert: "none", TransitionTime: 4}

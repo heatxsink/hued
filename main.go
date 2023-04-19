@@ -89,7 +89,7 @@ type apiResponse struct {
 	StatusCode int    `json:"status_code"`
 }
 
-func getHueHubHostname(username string) (string, error) {
+func getHueHubHostname() (string, error) {
 	pp, err := portal.GetPortal()
 	if err != nil {
 		return "", err
@@ -166,7 +166,7 @@ func homeV1(w http.ResponseWriter, r *http.Request) {
 
 func groupV1(w http.ResponseWriter, r *http.Request) {
 	slogger := getLogger()
-	apiResponse := apiResponse{Result: true, Message: "", StatusCode: http.StatusOK}
+	ar := apiResponse{Result: true, Message: "", StatusCode: http.StatusOK}
 	r.ParseForm()
 	queryParams := r.Form
 	if r.Method == "GET" {
@@ -179,38 +179,38 @@ func groupV1(w http.ResponseWriter, r *http.Request) {
 				groupState := presets.GetLightState(state[0])
 				gg.SetGroupState(groupID, groupState)
 			} else {
-				apiResponse.Result = false
-				apiResponse.Message = "Invalid state."
-				apiResponse.StatusCode = http.StatusUnauthorized
+				ar.Result = false
+				ar.Message = "Invalid state."
+				ar.StatusCode = http.StatusUnauthorized
 			}
 		} else {
-			apiResponse.Result = false
-			apiResponse.Message = "Invalid id or name."
-			apiResponse.StatusCode = http.StatusUnauthorized
+			ar.Result = false
+			ar.Message = "Invalid id or name."
+			ar.StatusCode = http.StatusUnauthorized
 		}
 	} else {
-		apiResponse.Result = false
-		apiResponse.Message = "Not an HTTP GET."
-		apiResponse.StatusCode = http.StatusForbidden
+		ar.Result = false
+		ar.Message = "Not an HTTP GET."
+		ar.StatusCode = http.StatusForbidden
 	}
 	w.Header().Set("content-type", "application/json")
-	w.WriteHeader(apiResponse.StatusCode)
-	jsonData, err := json.Marshal(&apiResponse)
+	w.WriteHeader(ar.StatusCode)
+	jsonData, err := json.Marshal(&ar)
 	if err != nil {
-		slogger.Errorf("Error: %s\n", err.Error())
+		slogger.Error(err)
 	}
 	w.Write([]byte(jsonData))
 }
 
 func flicV1(w http.ResponseWriter, r *http.Request) {
 	slogger := getLogger()
-	apiResponse := apiResponse{Result: true, Message: "", StatusCode: http.StatusOK}
+	ar := apiResponse{Result: true, Message: "", StatusCode: http.StatusOK}
 	r.ParseForm()
 	queryParams := r.Form
 	buttonStates := presets.GetButtonStates()
 	currentLightState := buttonStates[buttonState]
 	if r.Method == "GET" {
-		apiResponse.Message = currentLightState
+		ar.Message = currentLightState
 	} else if r.Method == "POST" {
 		name, nameExists := queryParams["name"]
 		if nameExists {
@@ -223,22 +223,22 @@ func flicV1(w http.ResponseWriter, r *http.Request) {
 			} else {
 				buttonState = buttonState + 1
 			}
-			apiResponse.Message = currentLightState
+			ar.Message = currentLightState
 		} else {
-			apiResponse.Result = false
-			apiResponse.Message = "Invalid id or name."
-			apiResponse.StatusCode = http.StatusUnauthorized
+			ar.Result = false
+			ar.Message = "Invalid id or name."
+			ar.StatusCode = http.StatusUnauthorized
 		}
 	} else {
-		apiResponse.Result = false
-		apiResponse.Message = "Not an HTTP POST."
-		apiResponse.StatusCode = http.StatusForbidden
+		ar.Result = false
+		ar.Message = "Not an HTTP POST."
+		ar.StatusCode = http.StatusForbidden
 	}
 	w.Header().Set("content-type", "application/json")
-	w.WriteHeader(apiResponse.StatusCode)
-	jsonData, err := json.Marshal(&apiResponse)
+	w.WriteHeader(ar.StatusCode)
+	jsonData, err := json.Marshal(&ar)
 	if err != nil {
-		slogger.Errorf("Error: %s\n", err.Error())
+		slogger.Error(err)
 	}
 	w.Write([]byte(jsonData))
 }
@@ -268,7 +268,7 @@ func main() {
 			buttonState = 0
 			slogger := getLogger()
 			var err error
-			hueHostname, err = getHueHubHostname(hueUsernameOption)
+			hueHostname, err = getHueHubHostname()
 			if err != nil {
 				slogger.Fatal(err)
 			}
